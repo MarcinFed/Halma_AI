@@ -157,13 +157,13 @@ class HalmaGame:
         return self.checkPlayer1() or self.checkPlayer2()
 
 
-def player1_turn(game, blocked_pawns1, blocked_pawns2, heuristics, depth, alphabeta):
+def player1_turn(game, blocked_pawns1, blocked_pawns2, heuristics_player1, heuristics_player2, depth, alphabeta):
     print('Player 1')
     board_before = copy.deepcopy(game.board)
     if alphabeta:
-        _, best_move = minimax_with_alpha_beta(depth, True, 1, game, float('-inf'), float('inf'), copy.deepcopy(blocked_pawns1), copy.deepcopy(blocked_pawns2), heuristics)
+        _, best_move = minimax_with_alpha_beta(depth, True, 1, game, float('-inf'), float('inf'), copy.deepcopy(blocked_pawns1), copy.deepcopy(blocked_pawns2), heuristics_player1, heuristics_player2)
     else:
-        _, best_move = minimax(depth, True, 1, game, copy.deepcopy(blocked_pawns1), copy.deepcopy(blocked_pawns2), heuristics)
+        _, best_move = minimax(depth, True, 1, game, copy.deepcopy(blocked_pawns1), copy.deepcopy(blocked_pawns2), heuristics_player1, heuristics_player2)
     game.undo_move(board_before)
     if best_move:
         print(f"Player 1 moves from {best_move[0]} to {best_move[1]}")
@@ -194,10 +194,10 @@ def player2_turn(game, blocked_pawns1, blocked_pawns2, heuristics):
     return blocked_pawns2
 
 
-def start_game(heuristics, alphabeta=False, depth=2):
+def start_game(heuristics_player1, heuristics_player2, alphabeta=False, depth=2):
     game = HalmaGame()
     blocked_pawns1 = []
     blocked_pawns2 = []
     while not game.is_game_over():
-        blocked_pawns1 = player1_turn(game, blocked_pawns1, blocked_pawns2, heuristics, depth, alphabeta)
-        blocked_pawns2 = player2_turn(game, blocked_pawns1, blocked_pawns2, heuristics)
+        blocked_pawns1 = player1_turn(game, blocked_pawns1, blocked_pawns2, heuristics_player1, heuristics_player2, depth, alphabeta)
+        blocked_pawns2 = player2_turn(game, blocked_pawns1, blocked_pawns2, heuristics_player2)
