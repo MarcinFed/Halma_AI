@@ -19,14 +19,14 @@ rows = {
 
 
 def in_place(board, player):
-    placed = []
-    empty = 0
+    placed = []  # List to store positions of player's pieces
+    empty = 0  # Counter for empty positions
     for lane in rows[player]:
         for fields in rows[player][lane]:
             if board[fields[0]][fields[1]] == player:
-                placed.append(fields)
+                placed.append(fields)  # Add position to placed list
             elif board[fields[0]][fields[1]] != player:
-                empty += 1
+                empty += 1  # Increment empty counter
         if empty != 0:
-            return placed
-    return placed
+            return placed  # Return placed list if any empty positions
+    return placed  # Return placed list if all positions are filled

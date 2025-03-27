@@ -1,19 +1,16 @@
 import random
 
-
 def euclidean_distance(move, goal, game):
     return ((move[0] - goal[0])**2 + (move[1] - goal[1])**2)**0.5
-
 
 def manhattan_distance(move, goal, game):
     return abs(move[0] - goal[0]) + abs(move[1] - goal[1])
 
-
 def chebyshev_distance(move, goal, game):
     return max(abs(move[0] - goal[0]), abs(move[1] - goal[1]))
 
-
 def distance_and_jumps(move, goal, game):
+    # Calculate a heuristic combining Manhattan distance and jump potential
     manhattan = manhattan_distance(move, goal, game)
     jumps_potential = 0
 
@@ -29,16 +26,16 @@ def distance_and_jumps(move, goal, game):
     effective_distance = optimize(manhattan) - jumps_potential
     return effective_distance
 
-
 def optimize(distance):
+    # Optimize the distance by squaring it
     return distance ** 2
 
-
 def is_blocked(field, board):
+    # Check if a field is blocked
     return board[field[0]][field[1]] != 0
 
-
 def select_current_goal(goals, player, game):
+    # Select the current goal for the player based on the farthest distance
     goal = ()
     distance = 0
     for field in goals:
@@ -54,8 +51,8 @@ def select_current_goal(goals, player, game):
                 goal = field
     return goal
 
-
 def distance_to_goal(move, player, game, current_field, heuristics):
+    # Calculate the distance to the goal using the given heuristic
     goal = select_current_goal(game.get_goal(player), player, game)
     board = game.board
     distance_sum = 0
@@ -63,7 +60,5 @@ def distance_to_goal(move, player, game, current_field, heuristics):
         for j in range(16):
             if board[i][j] == player and (i, j) != current_field:
                 distance_sum += optimize(heuristics((i, j), goal, game))
-    distance_sum += (optimize(heuristics(move, goal, game))
-                      + random.randint(0, 20)
-                     )
+    distance_sum += (optimize(heuristics(move, goal, game)) + random.randint(0, 20))
     return distance_sum

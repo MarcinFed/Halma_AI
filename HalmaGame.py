@@ -10,6 +10,7 @@ BOARD = 'board.txt'
 
 
 class HalmaGame:
+    # Define goal positions for both players
     player_1_goal = [(15, 15), (15, 14), (15, 13), (15, 12), (15, 11),
                      (14, 15), (14, 14), (14, 13), (14, 12), (14, 11),
                      (13, 15), (13, 14), (13, 13), (13, 12),
@@ -23,6 +24,7 @@ class HalmaGame:
 
     def __init__(self, board=None):
         if board is None:
+            # Initialize board from file if not provided
             self.board = [[0] * 16 for _ in range(16)]
             with open(BOARD, 'r') as file:
                 lines = file.readlines()
@@ -43,15 +45,18 @@ class HalmaGame:
         return self.board
 
     def get_player_goal_fields(self, player):
+        # Return goal fields for the given player
         if player == 1:
             return self.player_1_goal
         else:
             return self.player_2_goal
 
     def undo_move(self, board):
+        # Restore the board to a previous state
         self.board = copy.deepcopy(board)
 
     def print_board(self, blocked_pawns1, blocked_pawns2):
+        # Print the current state of the board
         print("\t", end="  ")
         for col in range(16):
             if col < 9:
@@ -64,24 +69,24 @@ class HalmaGame:
                 print("\t", end=" ")
             print(" _ ", end="")
         print()
-        # Print row and board cells
         for row in range(16):
-            print(row, "\t|", sep="", end=" ")  # Add row number with pipe separator
+            print(row, "\t|", sep="", end=" ")
             for col in range(16):
                 cell = self.board[row][col]
                 pos = (row, col)
                 if pos in blocked_pawns1 or pos in blocked_pawns2:
-                    print(f"\033[93m{cell}\033[0m", end='  ')  # Yellow or another neutral color for blocked pawns
+                    print(f"\033[93m{cell}\033[0m", end='  ')
                 elif cell == 1:
-                    print(f"\033[92m{cell}\033[0m", end='  ')  # Green for player 1
+                    print(f"\033[92m{cell}\033[0m", end='  ')
                 elif cell == 2:
-                    print(f"\033[91m{cell}\033[0m", end='  ')  # Red for player 2
+                    print(f"\033[91m{cell}\033[0m", end='  ')
                 else:
                     print(cell, end='  ')
             print()
         print()
 
     def generate_all_possible_moves(self, player, blocked_pawns):
+        # Generate all possible moves for the given player
         no_jump_directions = [(1, 0), (0, 1), (-1, 0), (0, -1)]
         jump_directions = [(2, 0), (0, 2), (-2, 0), (0, -2)]
         moves = []
@@ -116,6 +121,7 @@ class HalmaGame:
         return list(moves)
 
     def make_move(self, player, move):
+        # Make a move on the board
         start, end = move
         self.board[end[0]][end[1]] = player
         self.board[start[0]][start[1]] = 0
@@ -123,6 +129,7 @@ class HalmaGame:
         return self.board
 
     def get_goal(self, player):
+        # Get the goal positions for the given player
         goals = []
         if player == 1:
             for field in self.player_1_goal:
@@ -140,22 +147,26 @@ class HalmaGame:
             return goals
 
     def checkPlayer1(self):
+        # Check if player 1 has won
         for field in self.player_1_goal:
             if self.board[field[0]][field[1]] != 1:
                 return False
         return True
 
     def checkPlayer2(self):
+        # Check if player 2 has won
         for field in self.player_2_goal:
             if self.board[field[0]][field[1]] != 2:
                 return False
         return True
 
     def is_game_over(self):
+        # Check if the game is over
         return self.checkPlayer1() or self.checkPlayer2()
 
 
 def player1_turn(game, blocked_pawns1, blocked_pawns2, heuristics_player1, heuristics_player2, depth, alphabeta):
+    # Player 1's turn
     print('Player 1')
     board_before = copy.deepcopy(game.board)
     if alphabeta:
@@ -176,6 +187,7 @@ def player1_turn(game, blocked_pawns1, blocked_pawns2, heuristics_player1, heuri
 
 
 def player2_turn(game, blocked_pawns1, blocked_pawns2, heuristics):
+    # Player 2's turn
     moves_player2 = game.generate_all_possible_moves(2, blocked_pawns2)
     options = []
     for move in moves_player2:
@@ -191,6 +203,7 @@ def player2_turn(game, blocked_pawns1, blocked_pawns2, heuristics):
 
 
 def start_game(heuristics_player1, heuristics_player2, alphabeta=False, depth=2):
+    # Start the game with given heuristics and parameters
     visited_nodes = 0
     rounds = 0
     game = HalmaGame()
